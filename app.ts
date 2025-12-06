@@ -12,6 +12,8 @@ initDB()
 
 app.use("/api/v1/auth",userRouter);
 
+app.use("/api/v1/users",userRouter)
+
 app.use("/api/v1/auth",authRouter);
 
 
