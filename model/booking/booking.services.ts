@@ -1,7 +1,7 @@
 import { pool } from "../../config/db";
 
 const createBooking = async (payload: Record<string, any>) => {
-    
+
   const { customer_id, vehicle_id, rent_start_date, rent_end_date } = payload;
 
   if (!customer_id || !vehicle_id || !rent_start_date || !rent_end_date) {
@@ -57,7 +57,21 @@ const createBooking = async (payload: Record<string, any>) => {
     },
   };
 };
+const getAllBooking = async()=>{
+ const result  = await  pool.query(`
+        SELECT * FROM bookings
+        `)
+  return result
+};
 
+const updateBooking = async()=>{
+    await pool.query(`
+        UPDATE bookings SET 
+        `)
+  return
+}
 export const bookingServices = {
-  createBooking
+  createBooking,
+  getAllBooking,
+  updateBooking
 };
