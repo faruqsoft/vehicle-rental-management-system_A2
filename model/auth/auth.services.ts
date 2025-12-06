@@ -1,8 +1,8 @@
 
 import bcrypt from "bcryptjs";
-import { pool } from "../config/db"
+import { pool } from "../../config/db"
 import jwt from "jsonwebtoken"
-import config from "../config/config";
+import config from "../../config/config";
 
 
 const userSignin = async(payload: Record<string, unknown>)=>{
@@ -17,12 +17,14 @@ const userSignin = async(payload: Record<string, unknown>)=>{
     `SELECT * FROM users WHERE email = $1`
     ,[email]);
 
+    console.log(result)
     if(result.rows.length === 0){
          return null
     }
 
     const user = result.rows[0];
     
+
 
    const match = await bcrypt.compare(password as string, user.password)
 
@@ -40,8 +42,8 @@ const userSignin = async(payload: Record<string, unknown>)=>{
 
     const  token = jwt.sign(jwtPayload,config.secretKey as string,{expiresIn:("7d")});
 
-
-    console.log(token)
+console.log({token, user})
+    
 
     return {token, user}
 

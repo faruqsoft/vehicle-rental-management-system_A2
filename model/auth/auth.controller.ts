@@ -9,7 +9,7 @@ const userSignin= async (req:Request, res:Response)=>{
 
     res.status(201).json({
       success: true,
-      message: "login successfull",
+      message: "login successful",
       data: result
     });
 

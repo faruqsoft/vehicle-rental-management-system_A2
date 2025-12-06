@@ -28,7 +28,7 @@ const createUser = async (payload: Record<string, unknown>) => {
        RETURNING *`,
       [name, email, hashedPassword, phone, role]
     );
-
+console.log(result)
       delete result.rows[0].password
       
     return result
