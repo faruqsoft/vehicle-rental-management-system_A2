@@ -39,7 +39,7 @@ console.log(result)
 
 const getUser = async()=>{
     const result = await pool.query(`
-      SELECT* from users`
+      SELECT id,name,email,phone ,role FROM users`
     );
     return result
 }

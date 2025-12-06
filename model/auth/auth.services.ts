@@ -14,10 +14,10 @@ const userSignin = async(payload: Record<string, unknown>)=>{
   }
 
    const result = await pool.query(
-    `SELECT * FROM users WHERE email = $1`
+    `SELECT* FROM users WHERE email = $1`
     ,[email]);
 
-    console.log(result)
+   
     if(result.rows.length === 0){
          return null
     }
@@ -32,7 +32,8 @@ const userSignin = async(payload: Record<string, unknown>)=>{
         return false
     }
 
-   
+    delete user.password;
+    
   const jwtPayload = {
     id: user.id,
     name: user.name,
@@ -42,15 +43,11 @@ const userSignin = async(payload: Record<string, unknown>)=>{
 
     const  token = jwt.sign(jwtPayload,config.secretKey as string,{expiresIn:("7d")});
 
-console.log({token, user})
-    
+ 
 
     return {token, user}
-
    
 }
-
-
 
 export  const  authServices ={
 userSignin
