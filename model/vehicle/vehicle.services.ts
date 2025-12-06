@@ -37,9 +37,23 @@ const getVehicleById = async(id:string)=>{
         return result
 }
 
+
+
+const updateVehicleById = async(vehicle_name:string,type:string,id:string)=>{
+
+    const result = await pool.query(
+        `UPDATE vehicles SET vehicle_name=$1,type=$2 WHERE id = $3 RETURNING *`,
+         [vehicle_name,type,id]
+           
+        )
+
+        return result
+}
+
 export const vehicleServices = {
     createVehicle,
     getVehicle,
-    getVehicleById
+    getVehicleById,
+    updateVehicleById
     
 }
