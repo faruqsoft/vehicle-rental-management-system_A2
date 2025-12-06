@@ -3,6 +3,7 @@ import initDB from "./config/db"
 import { userRouter } from "./model/user/user.routes";
 import { authRouter } from "./model/auth/auth.routes";
 import { vehicleRouter } from "./model/vehicle/vehicle.routes";
+import { bookingRouter } from "./model/booking/booking.routes";
 
 const app = Express();
 app.use(Express.json());
@@ -16,10 +17,9 @@ app.use("/api/v1/users",userRouter)
 
 app.use("/api/v1/auth",authRouter);
 
-
 app.use("/api/v1/vehicles",vehicleRouter)
 
-
+app.use("/api/v1/bookings",bookingRouter)
 
 app.get("/",(req:Request, res:Response)=>{
     res.status(200).json({
