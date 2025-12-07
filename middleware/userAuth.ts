@@ -27,7 +27,14 @@ const userAuth = (...roles: ('admin' | 'customer')[]) => {
     if (user.rows.length === 0) {
       throw new Error("User not found!");
     }
-    req.user = decoded;
+    req.user = {
+      id: user.rows[0].id,
+      email: user.rows[0].email,
+      role: user.rows[0].role
+    };
+
+
+
     if (roles.length && !roles.includes(decoded.role)) {
       throw new Error("You are not authorized");
     }

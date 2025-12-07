@@ -1,4 +1,5 @@
 import { pool } from "../../config/db";
+import { UpdateBookingParams } from "../../types/booking";
 
 const createBooking = async (payload: Record<string, any>) => {
 
@@ -57,21 +58,121 @@ const createBooking = async (payload: Record<string, any>) => {
     },
   };
 };
-const getAllBooking = async()=>{
- const result  = await  pool.query(`
-        SELECT * FROM bookings
-        `)
-  return result
+const getAllBookings = async (loggedInUser: any) => {
+
+  // ADMIN → get all bookings
+  if (loggedInUser.role === "admin") {
+    const result = await pool.query(
+      "SELECT * FROM bookings ORDER BY id DESC"
+    );
+    return result.rows;
+  }
+
+  // CUSTOMER → get only his bookings
+  if (loggedInUser.role === "customer") {
+    const result = await pool.query(
+      "SELECT * FROM bookings WHERE customer_id = $1 ORDER BY id DESC",
+      [loggedInUser.id]
+    );
+    return result.rows;
+  }
+
+  throw new Error("Forbidden");
 };
 
-const updateBooking = async()=>{
-    await pool.query(`
-        UPDATE bookings SET 
-        `)
-  return
-}
+
+
+const updateBooking = async ({
+  bookingId,
+  status,
+  loggedInUser,
+}: UpdateBookingParams) => {
+  
+  // 1️⃣ Find booking
+  const bookingRes = await pool.query(
+    "SELECT * FROM bookings WHERE id = $1",
+    [bookingId]
+  );
+
+  if (bookingRes.rows.length === 0) {
+    throw new Error("Booking not found");
+  }
+
+  const booking = bookingRes.rows[0];
+
+  // Normalize IDs
+  const bookingCustomerId = String(booking.customer_id);
+  const loggedUserId = String(loggedInUser.id);
+
+  // ============================
+  // 👤 CUSTOMER LOGIC
+  // ============================
+  if (loggedInUser.role === "customer") {
+
+    // Can only cancel own booking
+    if (bookingCustomerId !== loggedUserId) {
+      throw new Error("Forbidden: You can only cancel your own bookings");
+    }
+
+    // Cannot cancel on/after start date
+    const today = new Date();
+    const rentStart = new Date(booking.rent_start_date);
+
+    if (today >= rentStart) {
+      throw new Error("Cannot cancel booking after start date");
+    }
+
+    // Customers can ONLY cancel
+    if (status !== "cancelled") {
+      throw new Error("Customers can only cancel bookings");
+    }
+
+    // Update booking
+    await pool.query(
+      "UPDATE bookings SET status = $1 WHERE id = $2",
+      [status, bookingId]
+    );
+
+    // Make vehicle available again
+    await pool.query(
+      "UPDATE vehicles SET availability_status = 'available' WHERE id = $1",
+      [booking.vehicle_id]
+    );
+
+    return { ...booking, status };
+  }
+
+  // ============================
+  // 👑 ADMIN LOGIC
+  // ============================
+  if (loggedInUser.role === "admin") {
+
+    // Admin can only mark as returned
+    if (status !== "returned") {
+      throw new Error("Admins can only mark booking as returned");
+    }
+
+    // Update booking
+    await pool.query(
+      "UPDATE bookings SET status = $1 WHERE id = $2",
+      [status, bookingId]
+    );
+
+    // Make vehicle available again
+    await pool.query(
+      "UPDATE vehicles SET availability_status = 'available' WHERE id = $1",
+      [booking.vehicle_id]
+    );
+
+    return { ...booking, status, vehicle: { availability_status: "available" } };
+  }
+
+  throw new Error("Forbidden");
+};
+
+
 export const bookingServices = {
   createBooking,
-  getAllBooking,
+  getAllBookings,
   updateBooking
 };

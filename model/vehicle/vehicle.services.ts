@@ -15,7 +15,7 @@ const createVehicle = async(payload:Record<string, unknown >)=>{
         return result
 }
 
-const getVehicle = async()=>{
+const getAllVehicle = async()=>{
 
     const result = await pool.query(
           
@@ -57,13 +57,13 @@ const deleteVehicleById = async(vehicleId:string)=>{
          [vehicleId]
            
         )
-console.log(result)
+
         return result
 }
 
 export const vehicleServices = {
     createVehicle,
-    getVehicle,
+    getAllVehicle,
     getVehicleById,
     updateVehicleById,
     deleteVehicleById

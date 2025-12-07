@@ -21,7 +21,7 @@ const createUser = async (payload: Record<string, unknown>) => {
    
     const hashedPassword = await bcrypt.hash(password as string, 10);
 
-  console.log(hashedPassword)
+
     const result = await pool.query(
       `INSERT INTO users (name,email,password,phone,role)
        VALUES ($1,$2,$3,$4,$5)

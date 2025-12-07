@@ -22,48 +22,68 @@ const createBooking = async (req: Request, res: Response) => {
 };
 
 
-const getAllBooking = async (req: Request, res: Response) => {
+const getAllBookings = async (req: Request, res: Response) => {
   try {
+    const loggedInUser = req.user;
 
-    const result = await bookingServices.getAllBooking();
+    const result = await bookingServices.getAllBookings(loggedInUser);
 
-    res.status(201).json({
-      success: true,
-      message: "Bookings retrieved successfully",
-      data: result.rows
-    
-    });
-   
-
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-};
-
-const updateBooking = async (req: Request, res: Response) => {
-  try {
-
-    const result = await bookingServices.updateBooking();
-
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Bookings retrieved successfully",
       data: result,
     });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+
+const updateBooking = async (req: Request, res: Response) => {
+  try {
+    const { bookingId } = req.params;
+    const { status } = req.body;
+    const loggedInUser = req.user;
+
+    if (!loggedInUser) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    if (!bookingId) {
+      return res.status(400).json({ success: false, message: "Booking ID is required" });
+    }
+
+    const updatedBooking = await bookingServices.updateBooking({
+      bookingId,
+      status,
+      loggedInUser,
+    });
+
+    res.status(200).json({
+      success: true,
+      message:
+        status === "cancelled"
+          ? "Booking cancelled successfully"
+          : "Booking marked as returned. Vehicle is now available",
+      data: updatedBooking,
+    });
 
   } catch (err: any) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
       message: err.message,
     });
   }
 };
+
+
 export const bookingControllers = {
   createBooking,
-  getAllBooking,
+  getAllBookings,
   updateBooking
 };
 
