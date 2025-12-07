@@ -37,7 +37,7 @@ const getUser = async(req:Request,res:Response)=>{
        res.status(500).json({
           success:false,
           message:err.message,
-          error:err.message
+          
         });
     }
 }

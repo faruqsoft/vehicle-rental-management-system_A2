@@ -5,7 +5,8 @@ import { Roles } from "../model/auth/auth.constant";
 export const authorizeUser = (req: Request, res: Response, next: NextFunction) => {
   const loggedInUser = req.user; // Comes from userAuth
   const targetUserId = req.params.userId;
-
+console.log(loggedInUser);
+console.log(targetUserId)
   if (!loggedInUser) {
     return res.status(401).json({ error: "Unauthorized" });
   }

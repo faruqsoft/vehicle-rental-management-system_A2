@@ -11,7 +11,7 @@ router.post('/signup',userControllers.createUser);
 
 router.get("/",userAuth(Roles.admin),userControllers.getUser)
 
-router.put('/:userId',authorizeUser,userAuth(Roles.admin),userControllers.updateUser)
+router.put('/:userId',userAuth(Roles.admin),authorizeUser,userControllers.updateUser)
 router.delete('/:userId',userAuth(Roles.admin),userControllers.deleteUser)
 
 export const  userRouter = router
