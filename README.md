@@ -6,7 +6,7 @@ The system allows **Admins** and **Customers** to manage vehicles, bookings, ret
 ---
 
  Live API URL
- Base URL:(https://vehicle-management-three-eta.vercel.app/)
+ Base URL: https://vehicle-management-three-eta.vercel.app/
 
  Features
 
@@ -51,7 +51,7 @@ Dev Tools
 
 Clone the Repository
 
-git clone https://github.com/your-username/vehicle-rental-management.git
+git clone :https://github.com/faruqsoft/vehicle-rental-management-system_A2.git
 cd vehicle-rental-management
 
 npm install
